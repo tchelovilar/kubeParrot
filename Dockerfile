@@ -5,3 +5,5 @@ RUN apk update \
     && pip install kubernetes
 
 COPY src /
+
+ENTRYPOINT ["python","-u","kubeParrot.py"]
