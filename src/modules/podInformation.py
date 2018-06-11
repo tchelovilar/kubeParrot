@@ -21,6 +21,7 @@ class podInformation:
         listPods.extend(self.kube.list_namespaced_pod(namespace).items)
     else:
       listPods = self.kube.list_pod_for_all_namespaces(watch=False).items
+    # Run checks
     self.podCheck(listPods)
     self.podTerminatedCheck()
     self.count+=1
@@ -29,7 +30,6 @@ class podInformation:
   def podCheck(self,listPods):
     for pod in listPods:
       if pod.metadata.uid in self.lastInfo:
-        #print "Encontrado no banco: "+pod.metadata.name
         if pod.status.phase != self.lastInfo[pod.metadata.uid].status.phase:
           if pod.metadata.deletion_timestamp == None:
             if (self.lastInfo[pod.metadata.uid].status.phase == "Pending"

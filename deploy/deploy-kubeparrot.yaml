@@ -31,4 +31,4 @@ spec:
         args: ["50000"]
         env:
           - name: SLACK_WEBHOOK
-            value: "webhook"
+            value: "http://slack.com/webhook" # Change this
