@@ -1,7 +1,15 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kubeparrot
+  namespace: monitoring
   labels:
     app: kubeparrot
 spec:
@@ -18,5 +26,9 @@ spec:
       containers:
       - name: kubeparrot
         image: tchelovilar/kubeparrot
+        imagePullPolicy: Alwayss
         command: ["sleep"]
         args: ["50000"]
+        env:
+          - name: SLACK_WEBHOOK
+            value: "webhook"

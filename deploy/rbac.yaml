@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kubeparrot
-
+  namespace: monitoring
 
 ---
 kind: ClusterRole
@@ -23,7 +23,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: kubeparrot
-  namespace: default
+  namespace: monitoring
 roleRef:
   kind: ClusterRole
   name: kubeparrot
