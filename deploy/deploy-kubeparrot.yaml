@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeparrot
+  labels:
+    app: kubeparrot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubeparrot
+  template:
+    metadata:
+      labels:
+        app: kubeparrot
+    spec:
+      serviceAccountName: kubeparrot
+      containers:
+      - name: kubeparrot
+        image: tchelovilar/kubeparrot
+        command: ["sleep"]
+        args: ["50000"]
