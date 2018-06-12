@@ -1,8 +1,12 @@
 FROM alpine
 
 RUN apk update \
-    && apk add bash py-pip vim\
-    && pip install kubernetes
+    && apk add py-pip \
+    && pip install --upgrade pip \
+    && pip install kubernetes \
+    && pip install requests \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /root/.cache/pip
 
 COPY src /
 
