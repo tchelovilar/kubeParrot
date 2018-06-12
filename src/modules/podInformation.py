@@ -1,4 +1,4 @@
-
+import datetime
 
 class podInformation:
   newPods=[]
@@ -22,6 +22,7 @@ class podInformation:
     else:
       listPods = self.kube.list_pod_for_all_namespaces(watch=False).items
     # Run checks
+    self.containerCheck(listPods) # Conatiner Check need run before podCheck
     self.podCheck(listPods)
     self.podTerminatedCheck()
     self.count+=1
@@ -74,11 +75,22 @@ class podInformation:
       del self.lastInfo[pod]
 
 
-  def containerCheck(self):
-    print "temp"
+  def containerCheck(self,listPods):
+    for pod in listPods:
+      if pod.metadata.uid in self.lastInfo:
+        lastInfoPod=self.lastInfo[pod.metadata.uid]
+        i=0
+        for container in pod.status.container_statuses:
+          if container.restart_count > lastInfoPod.status.container_statuses[i].restart_count:
+            self.log(1,"Container *%s* from Pod *%s* has been restarted" % (container.name,pod.metadata.name),
+                     "danger",pod.metadata.namespace
+                    )
+          i+=1
+
 
   def log(self,level,message,type="good",namespace=""):
-    print ("Namespace: %s    Msg: %s" % ( namespace, message))
+    date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print ("%s Namespace: %s  Msg: %s" % (date, namespace, message))
     if level <= self.config["level"]:
       payload={
            "username": "kube-info",

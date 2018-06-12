@@ -37,4 +37,4 @@ count=1
 while True:
   pod.podMonitor()
   count+=1
-  time.sleep(5)
+  time.sleep(3)
