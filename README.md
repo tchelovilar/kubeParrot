@@ -1,11 +1,11 @@
-= About
+# About
 
 This is a simple slack alert client for Kubernetes to send message in Slack Messenger
 to notify about some changes in cluster.
 
-= Install
+# Install
 
-== Configure deployment
+## Configure deployment
 Use yaml files in deploy folder to deploy a Kubeparrot Pod for deploy, change
 environment variables to setup to your linking.
 
