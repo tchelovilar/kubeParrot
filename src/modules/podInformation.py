@@ -80,10 +80,11 @@ class podInformation:
                 lastInfoPod=self.lastInfo[pod.metadata.uid]
                 i=0
                 for container in pod.status.container_statuses:
-                    if container.restart_count > lastInfoPod.status.container_statuses[i].restart_count:
-                        self.log(1,"Container *%s* from Pod *%s* has been restarted" % (container.name,pod.metadata.name),
-                              "danger",pod.metadata.namespace
-                              )
+                    if isinstance(lastInfoPod.status.container_statuses,list):
+                        if container.restart_count > lastInfoPod.status.container_statuses[i].restart_count:
+                            self.log(1,"Container *%s* from Pod *%s* has been restarted" % (container.name,pod.metadata.name),
+                                "danger",pod.metadata.namespace
+                                )
                     i+=1
 
 
