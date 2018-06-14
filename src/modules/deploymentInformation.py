@@ -18,19 +18,19 @@ class deploymentInformation:
         listDeploys.extend(self.kube.list_namespaced_deployment(namespace).items)
     else:
       listDeploys = self.kube.list_deployment_for_all_namespaces().items
+    # Verify container changes
+    self.checkContainers(listDeploys)
+    # Last function execute
     self.checkList(listDeploys)
 
 
   def checkList(self,listDeploys):
     newDeploys=[]
     for deploy in listDeploys:
-      if deploy.metadata.uid in self.lastInfo:
-        self.lastInfo[deploy.metadata.uid].checkNumber=self.count
-      else:
-        self.lastInfo[deploy.metadata.uid]=deploy
-        self.lastInfo[deploy.metadata.uid].checkNumber=self.count
-        if self.count > 1:
-          newDeploys.append(deploy.metadata.uid)
+      if deploy.metadata.uid not in self.lastInfo and self.count > 1:
+        newDeploys.append(deploy.metadata.uid)
+      self.lastInfo[deploy.metadata.uid]=deploy1
+      self.lastInfo[deploy.metadata.uid].checkNumber=self.count
     self.newDeployCheck(newDeploys)
     self.count+=1
 
@@ -38,6 +38,24 @@ class deploymentInformation:
   def newDeployCheck(self,newDeploys):
     for deployID in newDeploys:
       self.log(2,"New Deployment Created: "+self.lastInfo[deployID].metadata.name, "good", self.lastInfo[deployID].metadata.namespace)
+
+
+  def checkContainers(self,listDeploys):
+    for deploy in listDeploys:
+      n=0
+      if deploy.metadata.uid in self.lastInfo:
+        msg=""
+        for container in deploy.spec.template.spec.containers:
+          lastContainerInfo=self.lastInfo[deploy.metadata.uid].spec.template.spec.containers[n]
+          n+=1
+          if container != lastContainerInfo:
+            msg+="  Container *%s* changed:\n" % container.name
+          if container.image != lastContainerInfo.image:
+            msg+="  - New image: %s \n" % container.image
+        if msg != "":
+          msg="Deployment *%s* has modified.\n%s" % (deploy.metadata.name,msg)
+          self.log(2,msg, "good", deploy.metadata.namespace)
+
 
 
   def log(self,level,message,type="good",namespace=""):

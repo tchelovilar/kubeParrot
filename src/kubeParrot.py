@@ -44,7 +44,7 @@ deploy=deploymentInformation(kubeAppApi,slack)
 print "- System started."
 count=1
 while True:
-  pod.podMonitor()
   deploy.deployMonitor()
+  pod.podMonitor()
   count+=1
   time.sleep(3)
