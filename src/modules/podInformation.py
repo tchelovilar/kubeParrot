@@ -46,7 +46,8 @@ class podInformation:
                                       pod.status.phase ))
                             self.log(2,msg,"good",pod.metadata.namespace)
                     else:
-                        self.log(4,"Pod %s in termination process." % pod.metadata.name,"good",pod.metadata.namespace)
+                        self.log(4,"Pod %s in termination process." % 
+                                 pod.metadata.name,"good",pod.metadata.namespace)
                 self.lastInfo[pod.metadata.uid]=pod
                 #print pod
                 self.lastInfo[pod.metadata.uid].checkNumber=self.count
@@ -68,7 +69,9 @@ class podInformation:
         terminatedPods=[]
         for pod in self.lastInfo:
             if self.lastInfo[pod].checkNumber == lastCheckNumber:
-                self.log(3,"Pod has been deleted: %s" % self.lastInfo[pod].metadata.name,"danger",self.lastInfo[pod].metadata.namespace)
+                self.log(3,"Pod has been deleted: %s" % 
+                         self.lastInfo[pod].metadata.name,"danger",
+                         self.lastInfo[pod].metadata.namespace)
                 terminatedPods.append(pod)
         for pod in terminatedPods:
             del self.lastInfo[pod]
@@ -82,9 +85,9 @@ class podInformation:
                 for container in pod.status.container_statuses:
                     if isinstance(lastInfoPod.status.container_statuses,list):
                         if container.restart_count > lastInfoPod.status.container_statuses[i].restart_count:
-                            self.log(1,"Container *%s* from Pod *%s* has been restarted" % (container.name,pod.metadata.name),
-                                "danger",pod.metadata.namespace
-                                )
+                            self.log(1,"Container *%s* from Pod *%s* has been restarted" % 
+                                (container.name,pod.metadata.name),
+                                "danger",pod.metadata.namespace )
                     i+=1
 
 
