@@ -7,19 +7,11 @@ from modules.podInformation import podInformation
 from modules.deploymentInformation import deploymentInformation
 from modules.slackMessage import slackMessage
 
-
 #
 print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 #
-if 'SLACK_WEBHOOK' in os.environ:
-  SLACK_WEBHOOK=os.environ['SLACK_WEBHOOK']
-
-#
-POD_INFO_LEVEL=3
 MONITOR_NAMESPACES=None
-if 'POD_INFO_LEVEL' in os.environ:
-  POD_INFO_LEVEL=os.environ['POD_INFO_LEVEL']
 if 'MONITOR_NAMESPACES' in os.environ:
   MONITOR_NAMESPACES=os.environ['MONITOR_NAMESPACES'].split(",")
 
@@ -31,14 +23,25 @@ kubeAppApi = client.AppsV1Api()
 
 
 print "- Setup Slack message Client."
+if 'SLACK_WEBHOOK' in os.environ:
+  SLACK_WEBHOOK=os.environ['SLACK_WEBHOOK']
 slack = slackMessage(SLACK_WEBHOOK)
 
+
 print "- Configuring Pod Monitor."
+POD_INFO_LEVEL=3
+if 'POD_INFO_LEVEL' in os.environ:
+  POD_INFO_LEVEL=os.environ['POD_INFO_LEVEL']
 configPodInformation={"level":POD_INFO_LEVEL,"namespaces": MONITOR_NAMESPACES}
 pod=podInformation(kube,slack,configPodInformation)
 
+
 print "- Configuring Deployment Monitor"
-deploy=deploymentInformation(kubeAppApi,slack)
+DEPLOY_INFO_LEVEL=3
+if 'DEPLOY_INFO_LEVEL' in os.environ:
+  DEPLOY_INFO_LEVEL=os.environ['DEPLOY_INFO_LEVEL']
+configPodInformation={"level":DEPLOY_INFO_LEVEL,"namespaces": MONITOR_NAMESPACES}
+deploy=deploymentInformation(kubeAppApi,slack,configPodInformation)
 
 
 print "- System started."

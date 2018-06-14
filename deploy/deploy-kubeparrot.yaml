@@ -25,10 +25,19 @@ spec:
       serviceAccountName: kubeparrot
       containers:
       - name: kubeparrot
-        image: tchelovilar/kubeparrot
-        imagePullPolicy: Alwayss
-        command: ["sleep"]
-        args: ["50000"]
+        image: tchelovilar/kubeparrot:v0.2
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
         env:
           - name: SLACK_WEBHOOK
             value: "http://slack.com/webhook" # Change this
+          - name: POD_INFO_LEVEL
+            value: 3
+          - name: DEPLOY_INFO_LEVEL
+            value: 3

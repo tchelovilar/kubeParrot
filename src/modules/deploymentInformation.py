@@ -18,13 +18,11 @@ class deploymentInformation:
         listDeploys.extend(self.kube.list_namespaced_deployment(namespace).items)
     else:
       listDeploys = self.kube.list_deployment_for_all_namespaces().items
-    # Verify container changes
     self.checkContainers(listDeploys)
-    # Last function execute
-    self.checkList(listDeploys)
+    self.updateLastInfo(listDeploys) # This need run at end
 
 
-  def checkList(self,listDeploys):
+  def updateLastInfo(self,listDeploys):
     newDeploys=[]
     for deploy in listDeploys:
       if deploy.metadata.uid not in self.lastInfo and self.count > 1:
@@ -55,7 +53,6 @@ class deploymentInformation:
         if msg != "":
           msg="Deployment *%s* has modified.\n%s" % (deploy.metadata.name,msg)
           self.log(2,msg, "good", deploy.metadata.namespace)
-
 
 
   def log(self,level,message,type="good",namespace=""):
