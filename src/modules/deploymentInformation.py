@@ -29,7 +29,7 @@ class deploymentInformation:
     for deploy in listDeploys:
       if deploy.metadata.uid not in self.lastInfo and self.count > 1:
         newDeploys.append(deploy.metadata.uid)
-      self.lastInfo[deploy.metadata.uid]=deploy1
+      self.lastInfo[deploy.metadata.uid]=deploy
       self.lastInfo[deploy.metadata.uid].checkNumber=self.count
     self.newDeployCheck(newDeploys)
     self.count+=1
