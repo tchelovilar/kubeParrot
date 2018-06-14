@@ -79,7 +79,7 @@ class podInformation:
 
     def containerCheck(self,listPods):
         for pod in listPods:
-            if pod.metadata.uid in self.lastInfo:
+            if pod.metadata.uid in self.lastInfo and isinstance(pod.status.container_statuses,list):
                 lastInfoPod=self.lastInfo[pod.metadata.uid]
                 i=0
                 for container in pod.status.container_statuses:
