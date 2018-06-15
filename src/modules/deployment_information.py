@@ -26,32 +26,39 @@ class deployment_information:
 
 
     def updateLastInfo(self,listDeploys):
-        newDeploys=[]
         for deploy in listDeploys:
             if deploy.metadata.uid not in self.lastInfo and self.count > 1:
-                newDeploys.append(deploy.metadata.uid)
-            self.checkAvailableReplicas(deploy)
+                self.newDeployCheck(deploy)
+            self.checkAvailableReplicas(deploy) # This need run after checkContainer and newDeployCheck
             self.lastInfo[deploy.metadata.uid]=deploy
             self.lastInfo[deploy.metadata.uid].checkNumber=self.count
-        self.newDeployCheck(newDeploys)
         self.count+=1
 
     def checkAvailableReplicas(self,deploy):
         if deploy.status.replicas != None:
             if (deploy.status.available_replicas < deploy.status.replicas and
-              deploy.metadata.uid not in self.deployWithProblem):
-
+                    deploy.metadata.uid not in self.deployWithProblem):
                 msg=("Number of replicas for deployment *%s* is *%s* of *%s*" %
                     (deploy.metadata.name,
                     (0 if deploy.status.available_replicas is None else deploy.status.available_replicas),
                     deploy.status.replicas))
                 self.log(2,msg, "danger", deploy.metadata.namespace)
                 self.deployWithProblem.append(deploy.metadata.uid)
+            if (deploy.metadata.uid in self.deployWithProblem and 
+                    deploy.status.available_replicas == deploy.status.replicas):
+                self.deployWithProblem.remove(deploy.metadata.uid)
+                msg=("Number of replicas for deployment *%s* is *%s* of *%s*" %
+                    (deploy.metadata.name,
+                    (0 if deploy.status.available_replicas is None else deploy.status.available_replicas),
+                    deploy.status.replicas))
+                self.log(4,msg, "good", deploy.metadata.namespace)
                 
 
-    def newDeployCheck(self,newDeploys):
-        for deployID in newDeploys:
-          self.log(2,"New Deployment Created: "+self.lastInfo[deployID].metadata.name, "good", self.lastInfo[deployID].metadata.namespace)
+    def newDeployCheck(self,deploy):
+        self.log(2,"New Deployment Created: "+deploy.metadata.name, "good", 
+                 deploy.metadata.namespace)
+        # To avoid notification about available replicas.
+        self.deployWithProblem.append(deploy.metadata.uid) 
 
 
     def checkContainers(self,listDeploys):
@@ -69,6 +76,8 @@ class deployment_information:
                 if msg != "":
                     msg="Deployment *%s* has modified.\n%s" % (deploy.metadata.name,msg)
                     self.log(2,msg, "good", deploy.metadata.namespace)
+                    # To avoid notification about available replicas.
+                    self.deployWithProblem.append(deploy.metadata.uid) 
 
 
     def log(self,level,message,type="good",namespace=""):
