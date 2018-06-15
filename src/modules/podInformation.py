@@ -2,6 +2,7 @@ import datetime
 
 class podInformation:
     newPods=[]
+    podsWithProblem=[]
 
     def __init__(self,kubeClient,slackClient,config=None):
         self.lastInfo={}
@@ -24,44 +25,46 @@ class podInformation:
         # Run checks
         self.containerCheck(listPods) # Conatiner Check need run before podCheck
         self.podCheck(listPods)
-        self.podTerminatedCheck()
-        self.count+=1
+        
+
+    def checkPodStatus(self,pod):
+        if pod.status.container_statuses != None:
+            for container in pod.status.container_statuses:
+                if container.state.waiting.reason != "ContainerCreating":
+                    msg=("Pod *%s* have some problem:\n  Container *%s* with status *%s*:\n  %s" %
+                        (pod.metadata.name,container.name,
+                            container.state.waiting.reason,
+                            container.state.waiting.message))
+                    self.log(1,msg,"danger",pod.metadata.namespace)
+                    self.podsWithProblem.append(pod.metadata.uid)
+        if pod.status.conditions != None: 
+            for condition in pod.status.conditions:
+                if condition.reason not in [None,"ContainersNotReady"]:
+                    msg=("Problem to start pod *%s*:\n  Reason: *%s*\n  %s" %
+                          (pod.metadata.name,condition.reason,condition.message))
+                    self.log(1,msg,"danger",pod.metadata.namespace)
+                    self.podsWithProblem.append(pod.metadata.uid)
+                    
 
 
     def podCheck(self,listPods):
         for pod in listPods:
+            if pod.status.phase == "Pending" and pod.metadata.uid not in self.podsWithProblem:
+                self.checkPodStatus(pod)
+            if pod.status.phase == "Running" and pod.metadata.uid in self.podsWithProblem:
+                self.podsWithProblem.remove(pod.metadata.uid)
             if pod.metadata.uid in self.lastInfo:
                 if pod.status.phase != self.lastInfo[pod.metadata.uid].status.phase:
                     if pod.metadata.deletion_timestamp == None:
-                        if (self.lastInfo[pod.metadata.uid].status.phase == "Pending"
-                                and pod.status.phase == "Running"
-                                and pod.metadata.uid in self.newPods
-                              ):
-                            self.log(3,"Created Pod: "+pod.metadata.name,"good",pod.metadata.namespace)
-                            self.newPods.remove(pod.metadata.uid)
-                        else:
-                            msg=("Pod %s status changed from %s to %s" %
-                                    (pod.metadata.name,
-                                      self.lastInfo[pod.metadata.uid].status.phase,
-                                      pod.status.phase ))
-                            self.log(2,msg,"good",pod.metadata.namespace)
-                    else:
                         self.log(4,"Pod %s in termination process." % 
                                  pod.metadata.name,"good",pod.metadata.namespace)
-                self.lastInfo[pod.metadata.uid]=pod
-                #print pod
-                self.lastInfo[pod.metadata.uid].checkNumber=self.count
             else:
-                self.lastInfo[pod.metadata.uid]=pod
-                self.lastInfo[pod.metadata.uid].checkNumber=self.count
                 if self.count > 1:
-                    if pod.status.phase == "Running":
-                        self.log(3,"Pod has been created: "+pod.metadata.name,"good",pod.metadata.namespace)
-                    else:
-                        # Add new pods in list to validate after if this pod go out of
-                        # Pending Status.
-                        self.newPods.append(pod.metadata.uid)
-                        self.log(4,"New pod found: "+pod.metadata.name,"good",pod.metadata.namespace)
+                    self.log(3,"Pod has been created: "+pod.metadata.name,"good",pod.metadata.namespace)
+            self.lastInfo[pod.metadata.uid]=pod
+            self.lastInfo[pod.metadata.uid].checkNumber=self.count
+        self.podTerminatedCheck()
+        self.count+=1
 
 
     def podTerminatedCheck(self):
