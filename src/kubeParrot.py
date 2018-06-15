@@ -8,7 +8,7 @@ from modules.deployment_information import deployment_information
 from modules.slack_message import slack_message
 
 #
-print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+print "%s Starting..." % datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # Global Options
 MONITOR_NAMESPACES=[]
