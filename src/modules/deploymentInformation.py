@@ -2,6 +2,7 @@ import datetime
 
 class deploymentInformation:
     config={}
+    deployWithProblem=[]
 
     def __init__(self,kubeClient,slackClient,config=None):
         self.lastInfo={}
@@ -29,11 +30,24 @@ class deploymentInformation:
         for deploy in listDeploys:
             if deploy.metadata.uid not in self.lastInfo and self.count > 1:
                 newDeploys.append(deploy.metadata.uid)
+            self.checkAvailableReplicas(deploy)
             self.lastInfo[deploy.metadata.uid]=deploy
             self.lastInfo[deploy.metadata.uid].checkNumber=self.count
         self.newDeployCheck(newDeploys)
         self.count+=1
 
+    def checkAvailableReplicas(self,deploy):
+        if deploy.status.replicas != None:
+            if (deploy.status.available_replicas < deploy.status.replicas and
+              deploy.metadata.uid not in self.deployWithProblem):
+
+                msg=("Number of replicas for deployment *%s* is *%s* of *%s*" %
+                    (deploy.metadata.name,
+                    (0 if deploy.status.available_replicas is None else deploy.status.available_replicas),
+                    deploy.status.replicas))
+                self.log(2,msg, "danger", deploy.metadata.namespace)
+                self.deployWithProblem.append(deploy.metadata.uid)
+                
 
     def newDeployCheck(self,newDeploys):
         for deployID in newDeploys:
