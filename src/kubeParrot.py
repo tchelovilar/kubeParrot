@@ -8,13 +8,15 @@ from modules.deployment_information import deployment_information
 from modules.slack_message import slack_message
 
 #
-print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+print "%s Starting..." % datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-#
+# Global Options
 MONITOR_NAMESPACES=[]
 if 'MONITOR_NAMESPACES' in os.environ:
     MONITOR_NAMESPACES=os.environ['MONITOR_NAMESPACES'].split(",")
-
+CHECK_INTERVAL=10
+if 'CHECK_INTERVAL' in os.environ:
+    CHECK_INTERVAL=os.environ['CHECK_INTERVAL']
 
 print "- Setup kubernetes client."
 if 'USE_LOCAL_KUBECONFIG' in os.environ:
@@ -52,7 +54,7 @@ def main():
     while True:
         deploy.deployMonitor()
         pod.podMonitor()
-        time.sleep(3)
+        time.sleep(CHECK_INTERVAL)
 
 
 if __name__ == '__main__':
