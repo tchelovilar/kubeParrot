@@ -17,7 +17,10 @@ if 'MONITOR_NAMESPACES' in os.environ:
 
 
 print "- Setup kubernetes client."
-config.load_incluster_config()
+if 'USE_LOCAL_KUBECONFIG' in os.environ:
+    config.load_kube_config()
+else:
+    config.load_incluster_config()
 kube=client.CoreV1Api()
 kubeAppApi=client.AppsV1Api()
 
@@ -44,11 +47,13 @@ configPodInformation={"level":DEPLOY_INFO_LEVEL,"namespaces": MONITOR_NAMESPACES
 deploy=deploymentInformation(kubeAppApi,slack,configPodInformation)
 
 
-print "- System started."
-count=1
-while True:
-    deploy.deployMonitor()
-    pod.podMonitor()
-    count+=1
-    time.sleep(3)
-  
+def main():
+    print "- System started."
+    while True:
+        deploy.deployMonitor()
+        pod.podMonitor()
+        time.sleep(3)
+
+
+if __name__ == '__main__':
+    main()
