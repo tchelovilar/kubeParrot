@@ -1,6 +1,6 @@
 import datetime
 
-class podInformation:
+class pod_information:
     newPods=[]
     podsWithProblem=[]
 

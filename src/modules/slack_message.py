@@ -2,7 +2,7 @@ import json
 import requests
 
 
-class slackMessage:
+class slack_message:
     def __init__(self,webhookUrl):
         self.webhookUrl=webhookUrl
 

@@ -1,6 +1,6 @@
 import datetime
 
-class deploymentInformation:
+class deployment_information:
     config={}
     deployWithProblem=[]
 
