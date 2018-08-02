@@ -25,7 +25,7 @@ spec:
       serviceAccountName: kubeparrot
       containers:
       - name: kubeparrot
-        image: tchelovilar/kubeparrot:v0.3
+        image: tchelovilar/kubeparrot:v0.4
         imagePullPolicy: Always
         resources:
           limits:

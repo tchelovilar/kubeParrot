@@ -30,7 +30,7 @@ class pod_information:
     def checkPodStatus(self,pod):
         if pod.status.container_statuses != None:
             for container in pod.status.container_statuses:
-                if container.state.waiting.reason != None:
+                if container.state.waiting != None:
                     if container.state.waiting.reason != "ContainerCreating":
                         msg=("Pod *%s* have some problem:\n  Container *%s* with status *%s*:\n  %s" %
                             (pod.metadata.name,container.name,
