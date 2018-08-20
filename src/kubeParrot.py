@@ -5,7 +5,9 @@ from datetime import datetime
 import os
 from modules.pod_information import pod_information
 from modules.deployment_information import deployment_information
+from modules.node_information import node_information
 from modules.slack_message import slack_message
+
 
 #
 print "%s Starting..." % datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -48,12 +50,16 @@ if 'DEPLOY_INFO_LEVEL' in os.environ:
 configPodInformation={"level":DEPLOY_INFO_LEVEL,"namespaces": MONITOR_NAMESPACES}
 deploy=deployment_information(kubeAppApi,slack,configPodInformation)
 
+print "- Configuring Node Monitor"
+node=node_information(kube,slack)
+
 
 def main():
     print "- System started."
     while True:
         deploy.deployMonitor()
         pod.podMonitor()
+        node.nodeMonitor()
         time.sleep(CHECK_INTERVAL)
 
 

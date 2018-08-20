@@ -16,7 +16,7 @@ environment variables to setup to your linking.
 
 | Variable           | Default Value | Example                   | Description |
 | :---               | :---          | :---                      | :---        |
-| *SLACK_WEBHOOK*    | Null          |  http://slack.com/webhook | Url for slack webhook |
+| *SLACK_WEBHOOK*    | Null          | http://slack.com/webhook  | Url for slack webhook |
 | MONITOR_NAMESPACES | None          | production,default        | If you need monitor specific namespaces (comma separated). Default is all namespaces. |
 | POD_INFO_LEVEL     | 3             | 3                         | Information Level. 1 - 4, greater is more detailed. |
 | DEPLOY_INFO_LEVEL  | 3             | 3                         | Information Level. 1 - 4, greater is more detailed. |
