@@ -98,7 +98,7 @@ class pod_information:
     def log(self,level,message,type="good",namespace=""):
         date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print ("%s Namespace: %s  Msg: %s" % (date, namespace, message))
-        if level <= self.config["level"]:
+        if int(self.config["level"]) >= int(level):
             payload={
                 "username": "kube-info",
                 "attachments":[ {
