@@ -32,7 +32,9 @@ kubeAppApi=client.AppsV1Api()
 print "- Setup Slack message Client."
 if 'SLACK_WEBHOOK' in os.environ:
     SLACK_WEBHOOK=os.environ['SLACK_WEBHOOK']
-slack = slack_message(SLACK_WEBHOOK)
+    slack = slack_message(SLACK_WEBHOOK)
+else:
+    slack = None
 
 
 print "- Configuring Pod Monitor."

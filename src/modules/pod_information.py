@@ -4,7 +4,7 @@ class pod_information:
     newPods=[]
     podsWithProblem=[]
 
-    def __init__(self,kubeClient,slackClient,config=None):
+    def __init__(self,kubeClient,slackClient=None,config=None):
         self.lastInfo={}
         self.count=1
         self.kube=kubeClient
@@ -98,7 +98,7 @@ class pod_information:
     def log(self,level,message,type="good",namespace=""):
         date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print ("%s Namespace: %s  Msg: %s" % (date, namespace, message))
-        if int(self.config["level"]) >= int(level):
+        if int(self.config["level"]) >= int(level) and self.slack:
             payload={
                 "username": "kube-info",
                 "attachments":[ {

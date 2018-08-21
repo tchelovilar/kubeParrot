@@ -4,7 +4,7 @@ class node_information:
     lastInfo = {}
     count = 1
 
-    def __init__(self,kubeClient,slackClient,config=None):
+    def __init__(self,kubeClient,slackClient=None,config=None):
         self.kube = kubeClient
         self.slack = slackClient
         if not config:
@@ -87,7 +87,7 @@ class node_information:
     def log(self,level,message,type="good"):
         date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print ("%s - %s" % (date, message))
-        if level <= self.config["level"]:
+        if int(level) <= int(self.config["level"]) and self.slack:
             payload={
                 "username": "kube-info",
                 "attachments":[ {

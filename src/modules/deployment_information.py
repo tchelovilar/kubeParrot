@@ -4,7 +4,7 @@ class deployment_information:
     config={}
     deployWithProblem=[]
 
-    def __init__(self,kubeClient,slackClient,config=None):
+    def __init__(self,kubeClient,slackClient=None,config=None):
         self.lastInfo={}
         self.count=1
         self.kube=kubeClient
@@ -83,7 +83,7 @@ class deployment_information:
     def log(self,level,message,type="good",namespace=""):
         date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print ("%s Namespace: %s  Msg: %s" % (date, namespace, message))
-        if level <= self.config["level"]:
+        if int(level) <= int(self.config["level"]) and self.slack:
             payload={
                 "username": "kube-info",
                 "attachments":[ {
