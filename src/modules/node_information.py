@@ -20,7 +20,9 @@ class node_information:
             if self.count > 1 and node.metadata.name not in self.lastInfo:
                 self.log(3,"New Node in Kubernetes Cluster: "+node.metadata.name ,"good")
             self.lastInfo[node.metadata.name] = node
+            self.lastInfo[node.metadata.name].checkNumber = self.count
             self.lastInfo[node.metadata.name].healthInfo = healthInfo
+        self.terminateCheck(nodeList)
         self.count+=1
 
 
@@ -39,7 +41,12 @@ class node_information:
 
 
     def terminateCheck(self,nodeList):
-        print ""
+        lastCount = self.count - 1
+        for node in nodeList:
+            if node.checkNumber == lastCount:
+                self.log(3,"Node "+node.metadata.name+" removed from cluster." ,"danger")
+                del(self.lastInfo[node])
+
 
     def nodeHealthInfo(self,nodeInfo):
         readyStatus="None"
