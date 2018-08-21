@@ -12,7 +12,7 @@ metadata:
   name: kubeparrot
 rules:
 - apiGroups: [""]
-  resources: ["pods"]
+  resources: ["pods","nodes"]
   verbs: ["get", "watch", "list"]
 - apiGroups: ["apps"]
   resources: ["deployments"]
