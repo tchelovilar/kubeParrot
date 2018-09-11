@@ -1,13 +1,10 @@
-FROM alpine
+FROM alpine:3.7
 
-RUN apk update \
-    && apk add py-pip \
-    && pip install --upgrade pip \
-    && pip install kubernetes \
+RUN apk update && \
+    apk add --no-cache py-pip && \
+    pip install --no-cache kubernetes && \
     # requests package need run after kubernetes package to solve modules dependencies.
-    && pip install requests \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /root/.cache/pip
+    pip install --no-cache --disable-pip-version-check requests
 
 COPY src /
 
