@@ -20,6 +20,7 @@ environment variables to setup to your linking.
 | MONITOR_NAMESPACES | None          | production,default        | If you need monitor specific namespaces (comma separated). Default is all namespaces. |
 | POD_INFO_LEVEL     | 3             | 3                         | Information Level. 1 - 4, greater is more detailed. |
 | DEPLOY_INFO_LEVEL  | 3             | 3                         | Information Level. 1 - 4, greater is more detailed. |
+| DEPLOY_INFO_LEVEL  |               |                           | Alpha Feature
 | CHECK_INTERVAL     | 10            | 10                        | Define interval in seconds to verify changes on cluster. |
 
 Apply config:
